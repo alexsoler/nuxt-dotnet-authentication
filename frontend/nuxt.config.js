@@ -16,6 +16,18 @@ export default {
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
+
+  /*
+   ** Global env variables
+   */
+  env: {
+    API_URL: process.env.API_URL || 'http://localhost:5000'
+  },
+
+  router: {
+    middleware: ['auth']
+  },
+
   /*
    ** Customize the progress-bar color
    */
@@ -27,7 +39,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['~/plugins/axios'],
   /*
    ** Nuxt.js dev-modules
    */
@@ -40,13 +52,45 @@ export default {
    */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
   ],
+
+  /*
+   ** Auth configuration
+   */
+  auth: {
+    redirect: {
+      login: '/login',
+      home: '/'
+    },
+    strategies: {
+      local: {
+        endpoints: {
+          login: {
+            url: 'api/account/login',
+            method: 'post',
+            propertyName: 'access_token'
+          },
+          logout: { url: 'api/account/logout', method: 'post' },
+          user: { url: '/api/account/user', method: 'get', propertyName: false }
+        }
+      }
+    }
+  },
+
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    proxy: true
+  },
+
+  proxy: {
+    '/api/': 'http://localhost:5000'
+  },
+
   /*
    ** Build configuration
    */
